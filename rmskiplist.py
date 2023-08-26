@@ -111,14 +111,13 @@ def set_website_settings(choice):
         print("Invalid choice. Exiting...")
         sys.exit()
 
-
 def main():
     display_menu()
     global choice
     choice = get_user_choice()
     set_website_settings(choice)
     data_path = os.path.join(site_folder, "data")  # Path to your folder
-    fail_path = os.path.join(site_folder, "failed")
+    fail_path = os.path.join(site_folder, "skiplist")
 
     # Get a list of filenames (without extensions) in the data folder
     datafilenames = os.listdir(data_path)
@@ -138,13 +137,12 @@ def main():
             print(f"Reading file : {datafilepath}...")
             
             # Set prefix to find info from data
-            title = category = status = ''
+            title = category = status = sanitized = ''
             title_prefix = "Title : "
             type_prefix = "Type : "
             status_prefix = "Status : "
             
             # Read manga data from data file
-            title = category = status = sanitized = ''
             with open(datafilepath, "r", encoding='utf-8') as file:
                 for line in file:
                     if line.startswith(title_prefix):
@@ -156,7 +154,7 @@ def main():
                         status = line[len(status_prefix):].strip()
                     else:
                         continue
-                    print(f'Reading data from {fail} finish!')
+                print(f'Reading data from {datafilepath} finish!')
             
             # Set folder name from data
             if category != '' and status != '':
@@ -174,25 +172,18 @@ def main():
                 
             print(f"Folder Name : {folder_name}")
             
-            # Remove all files and subfolder
             if os.path.exists(folder_name):
+                print(f"Deleting {folder_name}...")
                 shutil.rmtree(folder_name)
+                print(f"{folder_name} has been deleted.")
             else:
-                print("Folder not found.")
-            
-            print(f"Removing fail and data files : {fail}")
+                print("Folder not exists or have been removed.")
             
             # Remove data file
             if os.path.exists(datafilepath):
                 os.remove(datafilepath)
             else:
-                print("File not found.")
-            
-            # Remove failed file
-            if os.path.exists(failfilepath):
-                os.remove(failfilepath)
-            else:
-                print("File not found.")
+               print("File not found.")
             
         else:
             continue
